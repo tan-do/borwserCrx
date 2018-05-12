@@ -56,9 +56,6 @@ axios.interceptors.response.use(function (response) {
 
 
 
-
-
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

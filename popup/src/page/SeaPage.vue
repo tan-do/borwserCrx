@@ -36,7 +36,7 @@
     export default {
         data(){
             return {
-                apiUrl:"https://dev-browser-plugin.qiang100.com/api/",
+                apiUrl: process.env.API_ROOT,
                 productList:"",
                 page:2,
                 size:5,
@@ -63,7 +63,7 @@
         methods:{
             getDataOfChina(){
 
-                    this.axios.get(this.apiUrl+'popupPage/getListOfOversea?page=1&size=5').then((res) => {
+                    this.axios.get(this.apiUrl+'api/popupPage/getListOfOversea?page=1&size=5').then((res) => {
                         //this.getListOfChina = res.data;  //获取数据
                         //console.log(this.productList.createAt)
 
@@ -93,7 +93,7 @@
 
                                      setTimeout(function () {
 
-                                            _this.axios.get(_this.apiUrl+'popupPage/getListOfChina?page='+ _this.page+ '&size='+_this.size).then((res) => {
+                                            _this.axios.get(_this.apiUrl+'api/popupPage/getListOfChina?page='+ _this.page+ '&size='+_this.size).then((res) => {
 
                                                 //更新数组列表
                                                 for (let i = 0; i < res.data.data.productList.length; i++) {

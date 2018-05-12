@@ -25,7 +25,7 @@ export default {
     data () {
         return {
             formatOptions:'',  //格式化父组件传递的配置数据
-            tagSet:'京东@天猫@苏宁易购'          //关键词设置
+            tagSet:''          //关键词设置
 
         }
     },
@@ -35,7 +35,15 @@ export default {
     computed: {
         reversedTag: function () {
             var tagString = this.tagSet;
-            var tagArr= tagString.split('@')
+            var tagArr= tagString.split('@');
+
+            for(var i = 0; i < tagArr.length; i++) {    //去除数组中的空元素
+                if(tagArr[i] == "") {
+                    tagArr.splice(i,1);
+                    i = i - 1;
+                }
+            };
+
 
             return tagArr
         }

@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <p v-if =" 0">{{apiUrl}}</p>
     <header>
         <div class="head-logo">
             <img src="./assets/img/logo.png" alt="" >
@@ -34,6 +35,8 @@ export default {
   name: 'App',
   data(){
     return{
+        apiUrl: process.env.API_ROOT,   //从node环境中读取生产和测试环境接口地址
+        siteUrl: process.env.SITE_ROOT,
         userName: "登录",
     }
   },
@@ -54,6 +57,7 @@ export default {
         }, 2000);
 
 
+
       this.syncSiteSession();
       this.getUserInfo();
       this.stratSyncSiteSession()
@@ -63,13 +67,15 @@ export default {
         //同步网站的会话
         syncSiteSession() {
             chrome.cookies.get({
-                url: 'https://dev-www.qiang100.com/',
+                //url: 'https://dev-www.qiang100.com/',
+                url: this.siteUrl,
                 name: 'PHPSESSID'
             }, function(cookie) {
                 // console.log(cookie);
                 if (cookie) {
                     chrome.cookies.set({
-                        url: 'https://dev-browser-plugin.qiang100.com/',
+                        //url: 'https://dev-browser-plugin.qiang100.com/',
+                        url: this.apiUrl,
                         name: 'PHPSESSID',
                         value: cookie.value,
                         expirationDate: cookie.expirationDate
@@ -91,7 +97,7 @@ export default {
         getUserInfo(callback) {
             $.ajax({
                 type: "GET",
-                url: "https://dev-browser-plugin.qiang100.com/api/bgPage/getUserInfo",
+                url: this.apiUrl + "api/bgPage/getUserInfo",
                 dataType: "json",
             }).done(function (res) {
                 if(res.code == 100 && res.data && res.data.id){
@@ -113,8 +119,6 @@ export default {
             })
         }
 
-
-
   }
 }
 
@@ -122,6 +126,7 @@ export default {
 </script>
 
 <style lang="less">
+
 @import url('./assets/less/public.less');
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

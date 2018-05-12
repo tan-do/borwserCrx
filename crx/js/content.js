@@ -2,10 +2,12 @@
  * @Author: Query 
  * @Date: 2018-04-19 10:55:31 
  * @Last Modified by: Query
- * @Last Modified time: 2018-05-10 09:52:32
+ * @Last Modified time: 2018-05-12 14:41:02
  */
 
-var apiUrl = "https://dev-browser-plugin.qiang100.com/api/";
+var apiUrl = "https://dev-browser-plugin.qiang100.com/";
+var siteUrl = "https://dev-www.qiang100.com/";
+
 
 
 var content = {
@@ -38,19 +40,19 @@ var content = {
         var timer = setInterval(function () {
             brandUrl = encodeURIComponent(window.location.href);
             shopName = encodeURIComponent($('.shopLink').text().trim());   //天猫店铺名称
-            name = encodeURIComponent($('.tb-detail-hd h1').text().trim()) || encodeURIComponent($('.tb-detail-hd h1 a').text().trim())  //天猫商品名
-            brandName = encodeURIComponent($('.J_EbrandLogo').text().trim()) || encodeURIComponent($('#J_attrBrandName').text().trim().substring(3))  //天猫品牌名称
+            name = encodeURIComponent($('.tb-detail-hd h1').text().trim()) || encodeURIComponent($('.tb-detail-hd h1 a').text().trim());  //天猫商品名
+            brandName = encodeURIComponent($('.J_EbrandLogo').text().trim()) || encodeURIComponent($('#J_attrBrandName').text().trim().substring(3)); //天猫品牌名称
 
             if (brandUrl && name && brandName && shopName) { //确认已获取页面品牌信息
                 console.log('已获取全部参数')
                 console.log(brandName + "\n" + name + "\n" + brandUrl + "\n" + shopName)
                 _this.appendContent('.tm-ind-panel');  //传入追加天猫标签位置
 
-                _this.tabToggle('.content-list li', '.content-tab .div-list')
-                _this.appendPriceLine(brandUrl)
-                _this.appendAllPricce(brandUrl)
-                _this.appendEvaluateInfo(brandUrl)
-                _this.appendBrandInfo(name, brandName, brandUrl)
+                _this.tabToggle('.content-list li', '.content-tab .div-list');
+                _this.appendPriceLine(brandUrl);
+                _this.appendAllPricce(brandUrl);
+                _this.appendEvaluateInfo(brandUrl);
+                _this.appendBrandInfo(name, brandName, brandUrl);
                 clearInterval(timer);
             } else {
                 //return false;
@@ -100,29 +102,31 @@ var content = {
     appendContent: function (appendPosi) {   //传入页面追加div位置
         var contentDiv = $('\
             <div class="contentDiv">\
+                <a class = "content-logo" href = "https://www.qiang100.com/zhi/" target="_blank" > <img src = "https://dev-browser-plugin.qiang100.com/v2/assets/img/content-logo.png" > </a>\
                 <ul class="content-list">\
-                    <li class="active">价格走势</li>\
-                    <li >全网比价</li>\
-                    <li>看好评率</li>\
-                    <li>品牌详情</li>\
-                </ul>\
-                <section class="content-tab">\
-                    <div class="div-list price-line"></div>\
-                    <div class="div-list price-all"></div>\
-                    <div class="div-list evaluate-wrapper"></div>\
-                    <div class="div-list brand-wrapper">\
-                        <div class="brand-info"> \
-                            <div class="brand-app" > \
-                                <p> <img src = "https://dev-browser-plugin.qiang100.com/v2/assets/img/content-app.png" alt = "" > </p>\
-                                <p> 扫描下载百强APP </p>\
+                    <li class="active content-li" >价格走势\
+                        <div class="div-list price-line"></div>\
+                    </li>\
+                    <li class="content-li">全网比价\
+                        <div class="div-list price-all"></div>\
+                    </li class="content-li">\
+                    <li class="content-li">看好评率\
+                        <div class="div-list evaluate-wrapper"></div>\
+                    </li>\
+                    <li class="content-li">品牌详情\
+                        <div class="div-list brand-wrapper">\
+                            <div class="brand-info"> \
+                                <div class="brand-app" > \
+                                    <p> <img src = "https://dev-browser-plugin.qiang100.com/v2/assets/img/content-app.png" alt = "" > </p>\
+                                    <p> 扫描下载百强APP </p>\
+                                </div>\
                             </div>\
                         </div>\
-                    </div>\
-                </section>\
+                    </li>\
+                </ul>\
             </div >\
         ');
         $(appendPosi).addClass('reaPosi').after(contentDiv);
-        //$('.contentDiv').addClass(appendClass);
     },
 
     appendPriceLine: function (brandUrl) {   //价格曲线
@@ -130,7 +134,7 @@ var content = {
 
         $.ajax({
             type: "GET",
-            url: apiUrl + "contentPage/getProductPriceLine?url=" + brandUrl,
+            url: apiUrl + "api/contentPage/getProductPriceLine?url=" + brandUrl,
             dataType: "json",
         }).done(function (res) {
             if(res.code == 100){
@@ -168,7 +172,7 @@ var content = {
     appendAllPricce:function(brandUrl){         //全网比价
         $.ajax({
             type: "GET",
-            url: apiUrl + "contentPage/getAllMallPricce?url=" + brandUrl,
+            url: apiUrl + "api/contentPage/getAllMallPricce?url=" + brandUrl,
             dataType: "json",
         }).done(function (res) {
             if(res.code == 100){
@@ -177,9 +181,9 @@ var content = {
                     var list= '';
                     for (var i = 0; i< res.data.mallPrices.length;i++){
                         //alert(res.data.mallPrices[i].name)
-                        list += '<li><div class="logo-wrapper"><img src="' + res.data.mallPrices[i].logo + '" alt=""></div><span> 最新报价: <em> ￥' + res.data.mallPrices[i].price + '</em></span><a href = "' + res.data.mallPrices[i].url + '"target = "_blank" >直达链接 </a></li >'
+                        list += '<li><div class="logo-wrapper"><img src="' + res.data.mallPrices[i].logo + '" alt=""></div><span> 最新报价: <em> ￥' + res.data.mallPrices[i].price + '</em></span><a href = "' + res.data.mallPrices[i].url + '"target = "_blank" >直达链接 </a></li >';
                     }
-                    var ulContent= '<ul>'+ list +'</ul>'
+                    var ulContent= '<ul>'+ list +'</ul>';
                     $('.price-all').append(ulContent);
                 }else{
                     console.log('暂无全网比价信息')
@@ -196,7 +200,8 @@ var content = {
         var _this =this;
         $.ajax({
             type: "GET",
-            url: apiUrl + "contentPage/getProductEvaluateInfo?url=" + brandUrl,
+            url: apiUrl + "api/contentPage/getProductEvaluateInfo?url=" + brandUrl,
+            //url: "http://127.0.0.1:3000/contentPage/getProductEvaluateInfo",
             dataType: "json",
         }).done(function (res) {
             //alert(res.data.evaluateInfo.goodRate)
@@ -207,8 +212,8 @@ var content = {
                         <div class="evaluate-info">\
                             <div class="evaluate-percent">\
                                 <div class="evaluate-percent-all">\
-                                    <p class="percent-all-good"><b>'+ res.data.evaluateInfo.goodRate + '</b><em>%</em></p>\
-                                    <p class="percent-all-num">全部评论:<span>'+ res.data.evaluateInfo.sum + '条</span></p>\
+                                    <p class="percent-all-good"><b>'+ res.data.evaluateInfo.goodRate + '<em>%</em></b></p>\
+                                    <p class="percent-all-num"><em>全部评论:<span>'+ res.data.evaluateInfo.sum + '条</span></em></p>\
                                 </div>\
                                 <div class="evaluate-percent-kind">\
                                     <p>好评 <span><b></b></span> <em>' + res.data.evaluateInfo.goodRate + '%</em></p>\
@@ -259,11 +264,10 @@ var content = {
 
         $.ajax({
             type: "GET",
-            url: apiUrl + "contentPage/getBrandInfo?name=" + name + "&brandName=" + brandName + "&url=" + brandUrl,
+            url: apiUrl + "api/contentPage/getBrandInfo?name=" + name + "&brandName=" + brandName + "&url=" + brandUrl,
             dataType: "json",
         }).done(function (res) {
             //console.log(res.data);
-
             
             if(res.code == 100){     //接口
                 if(res.data.brandInfo !== null){
@@ -272,8 +276,7 @@ var content = {
                         if(!res.data.brandInfo [i]){
                             res.data.brandInfo[i] = "--"
                         }
-                                
-                    }
+                    };
                     
                     var brandDetail = $('\
                             <div class="brand-detail">\
@@ -282,7 +285,7 @@ var content = {
                                 <p><span>全网销量: <em>'+ res.data.brandInfo.sold +'</em></span> </p>\
                                 <p><span>品牌折扣: <em>'+ res.data.brandInfo.discount +'条</em></span>  <a href="'+ res.data.brandInfo.url +'" target="_blank">查看更多>></a></p>\
                             </div>\
-                    ')
+                    ');
                     $('.brand-info').append(brandDetail);
 
                 }else{
@@ -401,6 +404,9 @@ var content = {
             yAxis: {
                 type: 'value'
             },
+            tooltip:{
+
+            },
             series: [{
                 data: echartPrice,
                 type: 'line'
@@ -415,12 +421,13 @@ var content = {
     tabToggle: function (tabEle, tabList) {
         $(tabEle).on('mouseover', function (event) {
             $(this).addClass('active').siblings().removeClass('active');
-            var thisIndex = $(this).index();
-            $(tabList).eq(thisIndex).show().siblings().hide();
+            $(this).children('.div-list').show();
+            $(this).siblings().children('.div-list').hide();
         });
-    },
-
-
+        $(tabEle).on('mouseout',function(){
+            $(this).children('.div-list').hide();
+        })
+    }
     
 }
 

@@ -2,11 +2,13 @@
  * @Author: Query 
  * @Date: 2018-04-18 10:23:12 
  * @Last Modified by: Query
- * @Last Modified time: 2018-05-11 10:44:03
+ * @Last Modified time: 2018-05-12 14:14:55
  */
 
 
- var apiUrl = "https://dev-browser-plugin.qiang100.com/api/";
+var apiUrl = "https://dev-browser-plugin.qiang100.com/";
+var siteUrl = "https://dev-www.qiang100.com/";
+
 
 var background={
     init:function(){
@@ -48,10 +50,6 @@ var background={
                         localStorage.setItem('setOptions', JSON.stringify(defaultOptions))
 
                     }
-
-                    
-
-
                     
                 }
             });
@@ -63,7 +61,7 @@ var background={
         var _this = this;
         $.ajax({
             type: "GET",
-            url: apiUrl +  "optionPage/downloadOptions",
+            url: apiUrl +  "api/optionPage/downloadOptions",
             dataType: "json",
         }).done(function (res) {
 
@@ -137,7 +135,7 @@ var background={
                                 
                     $.ajax({
                         type: "POST",
-                        url:  apiUrl + "optionPage/uploadOptions",
+                        url:  apiUrl + "api/optionPage/uploadOptions",
 
                         dataType: "json",
                         data: JSON.stringify({
@@ -178,20 +176,18 @@ var background={
     },
 
 
-    log(){
-        console.log('欢迎访问百强聚惠!官网:https://www.qiang100.com\ndeveloped by Query : http://www.zbx.store')
-    },
-
     //同步网站的会话
     syncSiteSession() {
         chrome.cookies.get({
-            url: 'https://dev-www.qiang100.com/',
+            //url: 'https://dev-www.qiang100.com/',
+            url: siteUrl,
             name: 'PHPSESSID'
         }, function(cookie) {
             // console.log(cookie);
             if (cookie) {
                 chrome.cookies.set({
-                    url: 'https://dev-browser-plugin.qiang100.com/',
+                    //url: 'https://dev-browser-plugin.qiang100.com/',
+                    url: apiUrl,
                     name: 'PHPSESSID',
                     value: cookie.value,
                     expirationDate: cookie.expirationDate
@@ -213,7 +209,7 @@ var background={
     getUserInfo(callback) {
         $.ajax({
             type: "GET",
-            url: "https://dev-browser-plugin.qiang100.com/api/bgPage/getUserInfo",
+            url: apiUrl + "api/bgPage/getUserInfo",
             dataType: "json",
         }).done(function (res) {
             if(res.code == 100 && res.data && res.data.id){
