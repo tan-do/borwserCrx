@@ -2,9 +2,7 @@
     <div id="app">
         <header>
             <div class="head-logo">
-                <a href="https://www.qiang100.com/zhi/" target="_blank">
-                    <img src="./assets/img/logo.png" alt="">
-                </a>
+                <img src="./assets/img/logo.png" alt="">
             </div>
             <form action="https://www.qiang100.com/zhi/search" class="head-search" target="_blank">
                 <label for=""></label><input type="text" placeholder="搜索相关产品" name="name">
@@ -40,7 +38,9 @@
             }
         },
         mounted() {
-
+            this.syncSiteSession();
+            this.getUserInfo();
+            this.stratSyncSiteSession();
             this.showUser()
         },
         methods: {
@@ -48,12 +48,69 @@
             showUser() {
                 let _this = this;
                 setInterval(function() {
-                    var getUser = JSON.parse(localStorage.getItem('user'));
-                    console.log(getUser.nickname);
-                    _this.userName = getUser.nickname
+                    _this.getUserInfo(function(userInfo) {
+                        if (userInfo) {
+                            _this.userName = userInfo.nickname;
+                            console.log('已登录状态，用户信息：' + JSON.stringify(userInfo.nickname));
+                        } else {
+                            _this.userName = "登录"
+                        }
+                    });
                 }, 2000);
             },
-
+            //同步网站的会话
+            syncSiteSession() {
+                var _this = this;
+                chrome.cookies.get({
+                    //url: 'https://dev-www.qiang100.com/',
+                    url: _this.siteUrl,
+                    name: 'PHPSESSID'
+                }, function(cookie) {
+                    // console.log(cookie);
+                    if (cookie) {
+                        chrome.cookies.set({
+                            //url: 'https://dev-browser-plugin.qiang100.com/',
+                            url: _this.apiUrl,
+                            name: 'PHPSESSID',
+                            value: cookie.value,
+                            expirationDate: cookie.expirationDate
+                        }, function(cookie) {
+                            // console.log(cookie);
+                        });
+                    }
+                });
+            },
+            //启动定时同步网站的会话
+            stratSyncSiteSession() {
+                let self = this;
+                setInterval(function() {
+                    self.syncSiteSession();
+                }, 1000);
+            },
+            //获取用户信息
+            getUserInfo(callback) {
+                var _this = this;
+                $.ajax({
+                    type: "GET",
+                    url: _this.apiUrl + "api/bgPage/getUserInfo",
+                    dataType: "json",
+                }).done(function(res) {
+                    if (res.code == 100 && res.data && res.data.id) {
+                        if (callback) {
+                            callback(res.data);
+                        }
+                    } else {
+                        if (callback) {
+                            callback(false);
+                        }
+                    }
+                }).fail(function() {
+                    console.log('网络错误')
+                    if (callback) {
+                        callback(false);
+                    }
+                }).always(function() {})
+            }
         }
     }
 </script>

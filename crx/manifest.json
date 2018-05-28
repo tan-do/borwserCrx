@@ -1,12 +1,12 @@
 {
-	"name": "百强聚惠测试版",
+	"name": "品牌特价",
 	"version": "1.0",
 	"icons": {
-		"16": "img/icon/icon_16.png",
-		"48": "img/icon/icon_48.png",
-		"128": "img/icon/icon_128.png"
+		"16": "icon.png",
+		"48": "icon.png",
+		"128": "icon.png"
 	},	
-	"description": "百强聚惠扩展chrome开发版",
+	"description": "集比价、价格走势、淘宝天猫优惠券、优惠爆料等多功能综合实用插件",
 	"homepage_url": "https://www.qiang100.com/",
 	"browser_action": {
 		"default_icon": "icon.png",
@@ -47,7 +47,7 @@
 		"activeTab",
 		"declarativeContent",
 		"storage",
-		"notifications",
+	    "notifications",
 		"https://*/*",
 		"http://*/*",
 		"cookies"

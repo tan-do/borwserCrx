@@ -2,93 +2,162 @@
  * @Author: Query 
  * @Date: 2018-04-18 10:23:12 
  * @Last Modified by: Query
- * @Last Modified time: 2018-05-12 14:14:55
+ * @Last Modified time: 2018-05-22 09:52:46
  */
 
+//测试环境 
+/* var apiUrl = "https://dev-browser-plugin.qiang100.com/";
+var siteUrl = "https://dev-www.qiang100.com/"; */
 
-var apiUrl = "https://dev-browser-plugin.qiang100.com/";
-var siteUrl = "https://dev-www.qiang100.com/";
+//线上环境
+
+var apiUrl = "https://browser-plugin.qiang100.com/";
+var siteUrl = "https://www.qiang100.com/";
 
 
-var background={
-    init:function(){
+var background = {
+    init: function () {
         //this.showBadge('99+', [215, 0, 0, 215]);
-
         var _this = this;
-        //this.downloadOptions();
-        //this.uploadOptions();
         this.stratSyncSiteSession();
-
-        var timer = setTimeout(function(){
-            _this.getUserInfo(function(userInfo) {
-                if (userInfo) {      //已登录获取用户信息
-                    console.log('已登录状态，用户信息：' + JSON.stringify(userInfo));
-                    
-                   _this.downloadOptions(); 
-                   _this.uploadOptions();
-                  
+        this.uploadOptions();
+        this.downloadOptions();
+        this.sendContent();
+        this.needPush();
+        var timer = setTimeout(function () {
+            _this.getUserInfo(function (userInfo) {
+                if (userInfo) { //已登录获取用户信息
+                    console.log('已获取用户信息，用户信息：' + JSON.stringify(userInfo));
+                    var userData = JSON.stringify(userInfo);
+                    var setUser = localStorage.setItem('user',userData)
                 } else {
-                    console.log('未登录状态');      //检测本地是否有配置
-                   
-                    var getOptions = localStorage.getItem('setOptions');
-                    //alert(getOptions);
+                    console.log('未获取用户信息');
 
-                    if (getOptions) {
-                        console.log('本地有配置')
-                    } else {
-                        console.log('本地无配置')
-
-                        var defaultOptions = {
-                            "priceLineForList": true,
-                            "selectedCategories": ["数码", "电器"],
-                            "priceLineForDetail": false,
-                            "needPush": false,
-                            "selectedKeywords": [],
-                            "categories": ["食品", "母婴", "个护", "数码", "电器", "日用", "运动", "服饰鞋帽", "玩模乐器", "办公", "家装", "汽车", "图书", "旅行"]
-                        };
-
-                        localStorage.setItem('setOptions', JSON.stringify(defaultOptions))
-
-                    }
-                    
                 }
             });
         }, 2000);
     },
+    
+    needPush(){
+        var _this = this;
+        var timer = setInterval(function(){
+            var getOptions = JSON.parse(localStorage.getItem('setOptions'));
+            var needPush =  getOptions.needPush;
+            if(needPush){
+                $.ajax({
+                    type: "GET",
+                    url: apiUrl + "api/bgPage/getPush",
+                    dataType: "json",
+                }).done(function(res){
+                    if(res.code = 100){
+/*                         res.data.pushList= [
+                          {
+                              "content": "",
+                              "icon": "https://static-zhi-image.qiang100.com/zdmimg/20180517/21D98179B1.jpeg_resize.jpg",
+                              "title": "测试推送信息",
+                              "url": "https://www.qiang100.com/zhi/16641978.html"
+                          },
+                          {
+                              "content": "西湖龙井",
+                              "icon": "https://static-zhi-image.qiang100.com/zdmimg/20180517/29A6484D33.jpeg_resize.jpg",
+                              "title": "测试推送信息",
+                              "url": "https://www.qiang100.com/zhi/16641914.html"
+
+                          },
+
+                        ];  */
+                        
+                        for(var i=0;i<res.data.pushList.length;i++){
+                           
+                            var title = res.data.pushList[i].title; //获取通知标题
+                            var url = res.data.pushList[i].url  //获取通知url
+                            res.data.pushList[i].body = res.data.pushList[i].content;
+                            var options = res.data.pushList [i];  //获取通知选项
+                            _this.pushNotice(title,options,url)
+                        }
+                       
+                    }else{
+                        return null
+                    }
+                });
+                console.log('接受服务器通知')
+            }else{
+                console.log('推送设置已关')
+            }
+        },60000)
+    },
+
+    
+    pushNotice(title,options,url){
+        var _this  = this;
+        if (!("Notification" in window)) {
+            console.log("当前浏览器不支持推送通知");
+        }else if (Notification.permission === "granted") {
+           var notification = new Notification(title, options);
+            notification.onclick = function (event) {
+                event.preventDefault(); // prevent the browser from focusing the Notification's tab
+                window.open(url, '_blank');
+            };
+
+            setTimeout(function() {
+                notification.close()
+            }, 10000);
 
 
-    downloadOptions:function(){
+
+        }else if (Notification.permission !== "denied") {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    var notification = new Notification(title, options);
+                    notification.onclick = function (event) {
+                        event.preventDefault(); // prevent the browser from focusing the Notification's tab
+                        window.open(url, '_blank');
+                    }
+                    setTimeout(function () {
+                        notification.close()
+                    }, 10000);
+                }
+            });
+        }
+    },
+
+    sendContent:function(){
+        chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
+            //alert(request.message)
+            var getOptions = JSON.parse(localStorage.getItem('setOptions'));
+            var getPriceLine = getOptions.priceLineForList;
+            sendResponse(getPriceLine)
+        });
+    },
+
+    downloadOptions: function () {
         var _this = this;
         $.ajax({
             type: "GET",
-            url: apiUrl +  "api/optionPage/downloadOptions",
+            url: apiUrl + "api/optionPage/downloadOptions",
             dataType: "json",
         }).done(function (res) {
 
-            if (res.code == 100) {  //已登录请求配置
+            if (res.code == 100) { //已登录请求配置
 
-                function downLoad(){
-                    var downloadOptions = JSON.stringify(res.data.options);
-                    localStorage.setItem('downloadOptions', downloadOptions);
-    
-                    localStorage.setItem('setOptions', downloadOptions)
-                    localStorage.setItem('lastModified', '')
-                };
-
-                downLoad()
+                var downloadOptions = JSON.stringify(res.data.options);
+                localStorage.setItem('downloadOptions', downloadOptions);
+                localStorage.setItem('setOptions', downloadOptions);
+                localStorage.setItem('lastModified', '');
                 console.log('下载配置成功')
 
-
-
-            } else {            //未登录检测本地是否有配置
-               console.log('下载配置失败')
-
-
-
-
-
-
-               
+            } else if (res.code == 101) { //未登录检测本地是否有配置
+                console.log("未登录")
+                var getOptions = localStorage.getItem('setOptions');
+                if (getOptions) {
+                    console.log('本地有配置,使用本地配置')
+                } else {
+                    console.log('本地无配置,返回默认配置')
+                    var defaultOptions = JSON.stringify(res.data.options);
+                    localStorage.setItem('setOptions', defaultOptions)
+                }
+            } else {
+                return null
             }
 
         }).fail(function () {
@@ -97,45 +166,36 @@ var background={
 
         });
 
-
-
-
-
-    },
-    
-    showBadge:function (str,bgColor) { //修改图标上文字提醒
-        chrome.browserAction.setBadgeBackgroundColor({ color: bgColor });
-        chrome.browserAction.setBadgeText({ text: str });
     },
 
- 
-    uploadOptions:function(){
+
+    uploadOptions: function () {
         var secondAgo = '';
-        var getOptions= '';
-        var downloadOptions ='';
-        var lastModified ='';
-        setInterval(function(){
+        var getOptions = '';
+        var downloadOptions = '';
+        var lastModified = '';
+        setInterval(function () {
             downloadOptions = JSON.parse(localStorage.getItem('downloadOptions'));
             setOptions = JSON.parse(localStorage.getItem('setOptions'));
 
-            var strModified =localStorage.getItem('lastModified');
+            var strModified = localStorage.getItem('lastModified');
             lastModified = new Date(strModified);
             var date = new Date();
 
             //console.log(lastModified + '\n' + date);
 
-            if(strModified){
-                secondAgo = parseInt((date- lastModified)/1000);
-                if(secondAgo >10){
+            if (strModified) {
+                secondAgo = parseInt((date - lastModified) / 1000);
+                if (secondAgo > 3) {
                     console.log('发请求' + secondAgo);
 
                     var getOptions = JSON.parse(localStorage.getItem('setOptions'));
                     console.log(getOptions);
 
-                                
+
                     $.ajax({
                         type: "POST",
-                        url:  apiUrl + "api/optionPage/uploadOptions",
+                        url: apiUrl + "api/optionPage/uploadOptions",
 
                         dataType: "json",
                         data: JSON.stringify({
@@ -143,15 +203,15 @@ var background={
                         }),
 
                     }).done(function (res) {
-                        if(res.code == -100){
+                        if (res.code == -100) {
                             console.log('需要登录')
-                        }else if(res.code == 100){
-                            
+                        } else if (res.code == 100) {
+
                             var doneRes = JSON.stringify(res);
-                            localStorage.setItem('downloadOptions' ,doneRes)
-    
+                            localStorage.setItem('downloadOptions', doneRes)
+
                             console.log('上传成功')
-                        }else{
+                        } else {
                             alert('请求失败')
                         }
 
@@ -160,19 +220,19 @@ var background={
                     }).always(function () {
                         return null
                     })
-            
-                    localStorage.setItem('lastModified','');
-                }else{
+
+                    localStorage.setItem('lastModified', '');
+                } else {
                     console.log('不发请求' + secondAgo)
                 }
-            }else{  
+            } else {
                 console.log('不执行')
             }
 
-        },1000);
-        
+        }, 1000);
 
-        
+
+
     },
 
 
@@ -182,7 +242,7 @@ var background={
             //url: 'https://dev-www.qiang100.com/',
             url: siteUrl,
             name: 'PHPSESSID'
-        }, function(cookie) {
+        }, function (cookie) {
             // console.log(cookie);
             if (cookie) {
                 chrome.cookies.set({
@@ -191,7 +251,7 @@ var background={
                     name: 'PHPSESSID',
                     value: cookie.value,
                     expirationDate: cookie.expirationDate
-                }, function(cookie) {
+                }, function (cookie) {
                     // console.log(cookie);
                 });
             }
@@ -201,7 +261,7 @@ var background={
     //启动定时同步网站的会话
     stratSyncSiteSession() {
         let self = this;
-        setInterval(function() {
+        setInterval(function () {
             self.syncSiteSession();
         }, 1000);
     },
@@ -212,7 +272,7 @@ var background={
             url: apiUrl + "api/bgPage/getUserInfo",
             dataType: "json",
         }).done(function (res) {
-            if(res.code == 100 && res.data && res.data.id){
+            if (res.code == 100 && res.data && res.data.id) {
                 if (callback) {
                     callback(res.data);
                 }
@@ -234,3 +294,4 @@ var background={
 }
 
 background.init()
+
