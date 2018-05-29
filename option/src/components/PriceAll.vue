@@ -1,6 +1,6 @@
 <template>
     <div class="PriceLine">
-        <img src="../assets/img/price-line.gif" alt="">
+        <img src="../assets/img/price-all.gif" alt="">
     </div>
 </template>
 

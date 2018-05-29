@@ -1,6 +1,6 @@
 <template>
     <div class="PushNotice">
-        <img src="../assets/bg.png" alt="">
+        <img src="../assets/img/push-notice.png" alt="">
     </div>
 </template>
 
@@ -15,6 +15,8 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
+<style scoped lang="less">
+    .PushNotice{
+        img{position: relative;left: 40px;}
+    }
 </style>

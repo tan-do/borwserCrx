@@ -29,7 +29,7 @@
                         <p>点击设置您所关注的内容</p>
                     </li>
                     <li @click="tabToggle('PriceLine')">
-                        <input type="checkbox" v-model="options.priceLineForList" :checked="options.priceLineForlist" @click="setStorage()">
+                        <input type="checkbox" v-model="options.priceLineForList" disabled :checked="options.priceLineForlist" @click="setStorage()">
                         <p><span>单品页历史价格曲线</span></p>
                         <p>展示历史价格趋势功能</p>
                     </li>
@@ -38,8 +38,8 @@
                         <p><span>推送设置</span> </p>
                         <p>桌面右下角折扣推送功能</p>
                     </li>
-                    <li class="li-disabled" @click="layerMsg()">
-                        <input type="checkbox" name="" id="" disabled :checked="options.priceLineForDetail" @click="setStorage()">
+                    <li @click="tabToggle('PriceAll')">
+                        <input type="checkbox" disabled v-model="options.priceLineForDetail" :checked="options.priceLineForDetail" @click="setStorage()">
                         <p><span>非单品页比价功能</span></p>
                         <p>非单品(详情列表页)迷你比价功能</p>
                     </li>
@@ -100,12 +100,10 @@
             },
         },
         components: {
-            'PriceLine': () =>
-                import ('./components/PriceLine.vue'),
-            'PushNotice': () =>
-                import ('./components/PushNotice.vue'),
-            'MyFocus': () =>
-                import ('./components/MyFocus.vue'),
+            'MyFocus': () =>import ('./components/MyFocus.vue'),
+            'PriceLine': () =>import ('./components/PriceLine.vue'),
+            'PushNotice': () =>import ('./components/PushNotice.vue'),
+            'PriceAll': () =>import ('./components/PriceAll.vue'),
         }
     }
 </script>

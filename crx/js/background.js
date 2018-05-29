@@ -2,7 +2,7 @@
  * @Author: Query 
  * @Date: 2018-04-18 10:23:12 
  * @Last Modified by: Query
- * @Last Modified time: 2018-05-22 09:52:46
+ * @Last Modified time: 2018-05-29 16:25:37
  */
 
 //测试环境 
@@ -50,23 +50,28 @@ var background = {
                     dataType: "json",
                 }).done(function(res){
                     if(res.code = 100){
-/*                         res.data.pushList= [
+                        /*  
+                        res.data.pushList= [
                           {
-                              "content": "",
-                              "icon": "https://static-zhi-image.qiang100.com/zdmimg/20180517/21D98179B1.jpeg_resize.jpg",
-                              "title": "测试推送信息",
+                              "content": "220g*2袋辣条面筋休闲小吃零食魔芋丝香麻辣毛肚",
+                              "icon": "https://static-zhi-image.qiang100.com/zdmimg/20180529/93B6557225.jpeg_resize.jpg",
+                              "title": "卫龙魔芋爽素毛肚",
                               "url": "https://www.qiang100.com/zhi/16641978.html"
                           },
                           {
-                              "content": "西湖龙井",
+                              "content": "2018新茶春茶大佛越乡雨前龙井茶绿茶叶茶农直销250g包邮（券）",
                               "icon": "https://static-zhi-image.qiang100.com/zdmimg/20180517/29A6484D33.jpeg_resize.jpg",
-                              "title": "测试推送信息",
+                              "title": "农庄有约 西湖龙井茶 ",
                               "url": "https://www.qiang100.com/zhi/16641914.html"
-
                           },
-
-                        ];  */
-                        
+                          {
+                              "content": "银色 256GBApple iPhone X 智能手机 银色 256GB 8799元",
+                              "icon": "https://static-zhi-image.qiang100.com/zdmimg/20180529/F45A6D7E84.jpeg_resize.jpg",
+                              "title": "Apple iPhone X 智能手机",
+                              "url": "https://www.qiang100.com/zhi/16641914.html"
+                          },
+                        ]; 
+                        */
                         for(var i=0;i<res.data.pushList.length;i++){
                            
                             var title = res.data.pushList[i].title; //获取通知标题
@@ -125,8 +130,8 @@ var background = {
         chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
             //alert(request.message)
             var getOptions = JSON.parse(localStorage.getItem('setOptions'));
-            var getPriceLine = getOptions.priceLineForList;
-            sendResponse(getPriceLine)
+            var getPriceDetail = getOptions.priceLineForDetail;
+            sendResponse(getPriceDetail)
         });
     },
 

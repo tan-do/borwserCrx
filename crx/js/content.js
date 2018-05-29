@@ -2,7 +2,7 @@
  * @Author: Query 
  * @Date: 2018-04-19 10:55:31 
  * @Last Modified by: Query
- * @Last Modified time: 2018-05-18 11:40:15
+ * @Last Modified time: 2018-05-28 13:35:30
  */
 
  //测试环境
@@ -122,7 +122,7 @@ var content = {
                     <li class="content-li content-price-line" >价格走势\
                         <div class="div-list price-line"></div>\
                     </li>\
-                    <li class="content-li">全网比价\
+                    <li class="content-li content-price-all">全网比价\
                         <div class="div-list price-all"></div>\
                     </li class="content-li">\
                     <li class="content-li">看好评率\
@@ -150,7 +150,7 @@ var content = {
                 return null
             } else {
                 //alert(response)
-                $('.content-price-line').remove();
+                $('.content-price-all').remove();
                 $('.content-li').css({
                     "width": "150px",
                     "background-position-x": "30px"
@@ -215,7 +215,6 @@ var content = {
         }).done(function (res) {
             if(res.code == 100){
                 if(res.data.mallPrices !== null ){
-
                     var list= '';
                     for (var i = 0; i< res.data.mallPrices.length;i++){
                         //alert(res.data.mallPrices[i].name)
@@ -226,7 +225,6 @@ var content = {
                 }else{
                     console.log('暂无全网比价信息')
                 }
-                
             }else{
                 return false
             }
