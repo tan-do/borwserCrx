@@ -77,7 +77,7 @@
             height: 50px;
             background: #FFF;
             line-height: 50px;
-            .head-logo {
+            .head-logo a{
                 width: 120px;
                 height: 50px;
                 font-size: 24px;

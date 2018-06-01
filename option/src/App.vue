@@ -28,7 +28,7 @@
                         <p><span>关注设置</span></p>
                         <p>点击设置您所关注的内容</p>
                     </li>
-                    <li @click="tabToggle('PriceLine')">
+                    <li @click="tabToggle('PriceLine')" v-if="false">
                         <input type="checkbox" v-model="options.priceLineForList" disabled :checked="options.priceLineForlist" @click="setStorage()">
                         <p><span>单品页历史价格曲线</span></p>
                         <p>展示历史价格趋势功能</p>
@@ -38,7 +38,7 @@
                         <p><span>推送设置</span> </p>
                         <p>桌面右下角折扣推送功能</p>
                     </li>
-                    <li @click="tabToggle('PriceAll')">
+                    <li @click="tabToggle('PriceAll')" v-if="false">
                         <input type="checkbox" disabled v-model="options.priceLineForDetail" :checked="options.priceLineForDetail" @click="setStorage()">
                         <p><span>非单品页比价功能</span></p>
                         <p>非单品(详情列表页)迷你比价功能</p>

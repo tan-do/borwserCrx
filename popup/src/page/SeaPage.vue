@@ -21,7 +21,7 @@
                 </a>
             </li>
         </ul>
-        <loading-component v-show="toBottom"></loading-component>
+        <loading-component v-show="busy"></loading-component>
     </div>
 </template>
 
@@ -34,9 +34,8 @@
                 apiUrl: process.env.API_ROOT,
                 productList: "",
                 page: 2,
-                size: 5,
-                busy: false,
-                toBottom: false
+                size: 20,
+                busy: false
             }
         },
         components: {
@@ -54,7 +53,7 @@
         },
         methods: {
             getDataOfChina() {
-                this.axios.get(this.apiUrl + 'api/popupPage/getListOfOversea?page=1&size=5').then((res) => {
+                this.axios.get(this.apiUrl + 'api/popupPage/getListOfOversea?page=1&size='+ this.size).then((res) => {
                     //this.getListOfChina = res.data;  //获取数据
                     //console.log(this.productList.createAt)
                     for (var i = 0; i < res.data.data.productList.length; i++) {
@@ -72,7 +71,6 @@
                     var scrollTop = $(this).scrollTop();
                     var ulHeight = $('.home-list').height();
                     if (scrollTop + wrapper >= ulHeight - 10) { //监控滚动条滚动到底部
-                        _this.toBottom = true;
                         if (!_this.busy) {
                             _this.busy = true;
                             setTimeout(function() {
@@ -86,7 +84,6 @@
                                     }
                                 });
                                 _this.page++;
-                                _this.toBottom = false;
                                 console.log('到底了' + _this.page)
                                 _this.busy = false;
                             }, 100)
